@@ -1,0 +1,62 @@
+specVersion: 0.0.2
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: SimpleDistributorFactory
+    network: xdai
+    source:
+      address: "0x4b05b21a6b6f12decc260d70f15af2b4b10b0169"
+      abi: SimpleDistributorFactory
+      startBlock: 23392862
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - DistributorCreated
+        - DistributorTemplateChanged
+        - OwnershipTransferred
+      abis:
+        - name: SimpleDistributorFactory
+          file: SimpleDistributorFactory/abis/SimpleDistributorFactory.json
+      eventHandlers:
+        - event: DistributorCreated(address,uint256)
+          handler: handleDistributorCreated
+        - event: DistributorTemplateChanged(address)
+          handler: handleDistributorTemplateChanged
+      file: SimpleDistributorFactory/SimpleDistributorFactory.wasm
+templates:
+  - kind: ethereum/contract
+    name: SimpleDistributor
+    network: xdai
+    source:
+      abi: SimpleDistributor
+    mapping:
+      file: templates/SimpleDistributor/SimpleDistributor.wasm
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      abis:
+        - name: SimpleDistributor
+          file: SimpleDistributor/abis/SimpleDistributor.json
+      entities:
+        - SimpleDistributorInitialized
+        - UserSetProbability
+        - StatusChanged
+        - UserRedemption
+        - PredictionFunded
+        - TimeOutUpdated
+      eventHandlers:
+        - event: SimpleDistributorInitialized(bytes32,bytes32,address,address,uint256[],uint256,uint256)
+          handler: handleSimpleDistributorInitialized
+        - event: UserSetProbability(address,uint256[],string)
+          handler: handleUserSetProbability
+        - event: StatusChanged(uint8)
+          handler: handleStatusChange
+        - event: UserRedemption(address,uint256[])
+          handler: handleRedemption
+        - event: PredictionFunded(address,uint256)
+          handler: handlePredictionFunded
+        - event: TimeOutUpdated(uint256)
+          handler: handleTimeOutUpdated
